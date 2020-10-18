@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="js/jsencrypt.min.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+      integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk"
+      crossorigin="anonymous"
+    />
+    <style>
+      .main {
+        margin: auto;
+        width: 30vw;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        height: 70px;
+        top: 100px;
+        margin-bottom: 20px;
+      }
+
+      .btn {
+        margin-top: 20px;
+      }
+    </style>
+    <title>Seguridad</title>
+  </head>
+  <body>
+    <div class="alert alert-primary" role="alert">
+      A simple primary alert—check it out!
+    </div>
+    <div class="container-fluid main">
+      <div class="custom-file">
+        <input type="file" class="custom-file-input" id="customFile" />
+        <label class="custom-file-label" for="customFile"
+          >Seleccione un archivo</label
+        >
+      </div>
+      <button class="btn btn-primary" type="submit" onclick="uploadFile()">
+        Enviar archivo
+      </button>
+    </div>
+    <script src="js/main.js"></script>
+    <script>
+      const uploadFile = async () => {
+        const publicKey = await fetchPublicKey();
+        const encrypter = new JSEncrypt();
+        console.log(publicKey);
+        encrypter.setKey(publicKey);
+
+        var fileReader = new FileReader();
+        fileReader.onload = (event) => {
+            const encrypted = encrypter.encrypt(event.target.result);
+            var formData = new FormData();
+            formData.append('enc', encrypted);
+
+            fetch('/DecryptFile', {
+                method: 'POST',
+                body: formData
+            });
+        }
+        fileReader.readAsText(document.querySelector('#customFile').files[0]);
+      };
+    </script>
+  </body>
+</html>
